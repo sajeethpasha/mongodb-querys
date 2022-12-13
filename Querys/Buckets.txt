@@ -1,0 +1,213 @@
+[
+  {
+    "_id": 1,
+    "last_name": "Bernard",
+    "first_name": "Emil",
+    "year_born": 1868,
+    "year_died": 1941,
+    "nationality": "France"
+  },
+  {
+    "_id": 2,
+    "last_name": "Rippl-Ronai",
+    "first_name": "Joszef",
+    "year_born": 1861,
+    "year_died": 1927,
+    "nationality": "Hungary"
+  },
+  {
+    "_id": 3,
+    "last_name": "Ostroumova",
+    "first_name": "Anna",
+    "year_born": 1871,
+    "year_died": 1955,
+    "nationality": "Russia"
+  },
+  {
+    "_id": 4,
+    "last_name": "Van Gogh",
+    "first_name": "Vincent",
+    "year_born": 1853,
+    "year_died": 1890,
+    "nationality": "Holland"
+  },
+  {
+    "_id": 5,
+    "last_name": "Maurer",
+    "first_name": "Alfred",
+    "year_born": 1868,
+    "year_died": 1932,
+    "nationality": "USA"
+  },
+  {
+    "_id": 6,
+    "last_name": "Munch",
+    "first_name": "Edvard",
+    "year_born": 1863,
+    "year_died": 1944,
+    "nationality": "Norway"
+  },
+  {
+    "_id": 7,
+    "last_name": "Redon",
+    "first_name": "Odilon",
+    "year_born": 1840,
+    "year_died": 1916,
+    "nationality": "France"
+  },
+  {
+    "_id": 8,
+    "last_name": "Diriks",
+    "first_name": "Edvard",
+    "year_born": 1855,
+    "year_died": 1930,
+    "nationality": "Norway"
+  },
+  {
+    "_id": 9,
+    "last_name": "Diriks",
+    "first_name": "Edvard",
+    "year_born": 1955,
+    "year_died": 1930,
+    "nationality": "Norway"
+  },
+  {
+    "_id": 10,
+    "last_name": "Diriks",
+    "first_name": "Edvard",
+    "year_born": 1895,
+    "year_died": 1930,
+    "nationality": "Norway"
+  },
+  {
+    "_id": 11,
+    "last_name": "Diriks",
+    "first_name": "Edvard",
+    "year_born": 1885,
+    "year_died": 1930,
+    "nationality": "Norway"
+  }
+]
+
+---------------------------------------------
+Query:
+db.collection.aggregate([
+  // First Stage
+  {
+    $bucket: {
+      groupBy: "$year_born",
+      // Field to group by
+      boundaries: [
+        1840,
+        1850,
+        1870,
+        1880,
+        1890,
+        
+      ],
+      // Boundaries for the buckets
+      default: "Other",
+      // Bucket id for documents which do not fall into a bucket
+      output: {
+        // Output for each bucket
+        "countt": {
+          $sum: 1
+        },
+        "artists": {
+          $push: {
+            "name": {
+              $concat: [
+                "$first_name",
+                " ",
+                "$last_name",
+                " -- ",
+                "$nationality"
+              ]
+            },
+            "year_born": "$year_born"
+          }
+        }
+      }
+    }
+  },
+  
+])
+
+Response:
+[
+  {
+    "_id": 1840,
+    "artists": [
+      {
+        "name": "Odilon Redon -- France",
+        "year_born": 1840
+      }
+    ],
+    "countt": 1
+  },
+  {
+    "_id": 1850,
+    "artists": [
+      {
+        "name": "Emil Bernard -- France",
+        "year_born": 1868
+      },
+      {
+        "name": "Joszef Rippl-Ronai -- Hungary",
+        "year_born": 1861
+      },
+      {
+        "name": "Vincent Van Gogh -- Holland",
+        "year_born": 1853
+      },
+      {
+        "name": "Alfred Maurer -- USA",
+        "year_born": 1868
+      },
+      {
+        "name": "Edvard Munch -- Norway",
+        "year_born": 1863
+      },
+      {
+        "name": "Edvard Diriks -- Norway",
+        "year_born": 1855
+      }
+    ],
+    "countt": 6
+  },
+  {
+    "_id": 1870,
+    "artists": [
+      {
+        "name": "Anna Ostroumova -- Russia",
+        "year_born": 1871
+      }
+    ],
+    "countt": 1
+  },
+  {
+    "_id": 1880,
+    "artists": [
+      {
+        "name": "Edvard Diriks -- Norway",
+        "year_born": 1885
+      }
+    ],
+    "countt": 1
+  },
+  {
+    "_id": "Other",
+    "artists": [
+      {
+        "name": "Edvard Diriks -- Norway",
+        "year_born": 1955
+      },
+      {
+        "name": "Edvard Diriks -- Norway",
+        "year_born": 1895
+      }
+    ],
+    "countt": 2
+  }
+]
+================================================================================================

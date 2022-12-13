@@ -1,0 +1,74 @@
+[
+  {
+    _id: 1,
+    type: "car",
+    specs: {
+      doors: 4,
+      wheels: 4
+    }
+  },
+  {
+    _id: 2,
+    type: "motorcycle",a
+    specs: {
+      doors: 0,
+      wheels: 2
+    }
+  },
+  {
+    _id: 3,
+    type: "jet ski"
+  }
+]
+
+Reqest:
+db.collection.aggregate([
+  {
+    $addFields: {
+      "specs.fuel_type": "unleaded"
+    }
+  },
+  {
+    $addFields: {
+      "specs.tot": {
+        "$add": [
+          "$specs.doors",
+          "$specs.wheels"
+        ]
+      }
+    }
+  }
+])
+
+Response:
+[
+  {
+    "_id": 1,
+    "specs": {
+      "doors": 4,
+      "fuel_type": "unleaded",
+      "tot": 8,
+      "wheels": 4
+    },
+    "type": "car"
+  },
+  {
+    "_id": 2,
+    "specs": {
+      "doors": 0,
+      "fuel_type": "unleaded",
+      "tot": 2,
+      "wheels": 2
+    },
+    "type": "motorcycle"
+  },
+  {
+    "_id": 3,
+    "specs": {
+      "fuel_type": "unleaded",
+      "tot": null
+    },
+    "type": "jet ski"
+  }
+]
+====================================================================================
